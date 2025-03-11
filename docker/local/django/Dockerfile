@@ -40,26 +40,15 @@ COPY --from=python-build-stage /usr/src/app/wheels /wheels/
 RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
     && rm -rf /wheels/
 
-COPY chown=django:django ./docker/local/django/entrypoint
+COPY chown=django:django ./docker/local/django/entrypoint.sh /entrypoint.sh
+COPY chown=django:django ./docker/local/django/start.sh /start.sh
 
+RUN sed -i 's/\$//g' /entrypoint.sh /start.sh && \
+    chmod +x /entrypoint.sh /start.sh
 
+COPY --chown=django:django . ${APP_HOME}
 
+USER django
 
+ENTRYPOINT ["/entrypoint.sh"]
 
-
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy requirements file and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# Expose port 8000 for Django development server
-EXPOSE 8000
-
-# Default command to run Django
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
