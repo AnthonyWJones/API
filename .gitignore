@@ -1,0 +1,78 @@
+# created by virtualenv automatically
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+*.env
+*.sqlite3
+db.sqlite3
+*.log
+*.pot
+*.pyc
+*.swp
+*~
+
+# Django-specific
+/media/
+*.DS_Store
+*.log
+/local_settings.py
+/secrets.json
+
+# Virtual environments
+venv/
+ENV/
+env/
+*.venv
+
+# Ignore VSCode and PyCharm settings
+.vscode/
+.idea/
+
+# Ignore compiled C files
+*.so
+
+# Ignore migrations compiled files
+**/migrations/__pycache__/
+**/migrations/*.pyc
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Ignore static and media files
+staticfiles/
+media/
+
+# Ignore Docker files
+*.pid
+celerybeat-schedule
+__pycache__/
+.dockerignore
+
+# Ignore PostgreSQL data in Docker
+postgres_data/
+
+# Ignore pipenv files
+Pipfile
+Pipfile.lock
+
+# Ignore node_modules (if using any frontend assets)
+node_modules/
+
+# Ignore AWS and Deployment files
+*.pem
+*.key
+.envrc
+
+# Ignore pytest cache
+.pytest_cache/
