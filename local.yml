@@ -1,0 +1,59 @@
+services:
+  api: &api
+    build:
+      context: .
+      dockerfile: ./docker/local/django/Dockerfile
+    volumes:
+      - .:/app:z
+      - ./staticfiles:/app/staticfiles
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.envs/.env.local  # Fixed space issue
+    depends_on:
+      - postgres
+      - mailpit
+    command: /start.sh
+    networks:
+      - banker_local_nw
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/local/postgres/Dockerfile
+    ports:
+      - "5432:5432"  # Fixed indentation
+    volumes:
+      - banker_local_db:/var/lib/postgresql/data
+    env_file:
+      - ./.envs/.env.local
+    networks:
+      - banker_local_nw
+
+  mailpit:
+    image: docker.io/axllent/mailpit:v1.20.3
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    volumes:
+      - banker_mailpit_db:/data  # Fixed spacing
+    environment:  # Fixed typo
+      MP_MAX_MESSAGES: 5000
+      MP_DATA_FILE: /data/mailpit.db
+      MP_SMPT_AUTH_ACCEPT_ANY: 1
+      MP_SMPT_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - banker_local_nw
+
+networks:
+  banker_local_nw:  # Fixed structure
+    external: true
+
+volumes:
+  banker_local_db:  # Fixed spacing
+  banker_mailpit_db:
+
+
+
+
+
