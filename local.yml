@@ -24,7 +24,7 @@ services:
     ports:
       - "5432:5432"  # Fixed indentation
     volumes:
-      - banker_local_db:/var/lib/postgresql/data
+      - banker2_local_db:/var/lib/postgresql/data
     env_file:
       - ./.envs/.env.local
     networks:
@@ -50,7 +50,7 @@ networks:
     external: true
 
 volumes:
-  banker_local_db:  # Fixed spacing
+  banker2_local_db:  # Fixed spacing
   banker_mailpit_db:
 
 

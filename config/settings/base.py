@@ -4,6 +4,7 @@ from django.conf.global_settings import LOGGING_CONFIG
 from dotenv import load_dotenv
 from os import getenv, path
 from loguru import logger
+from datetime import timedelta
 
 
 # Base directory
@@ -84,7 +85,7 @@ DATABASES = {
         "USER": getenv("POSTGRES_USER"),
         "PASSWORD": getenv("POSTGRES_PASSWORD"),
         "HOST": getenv("POSTGRES_HOST"),
-        "PORT": getenv("POSTGRES_PORT),
+        "PORT": getenv("POSTGRES_PORT"),
 
     }
 }

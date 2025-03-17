@@ -1,0 +1,14 @@
+{% extends 'emails/base.html' %}
+
+
+{% block title %}
+    Your Login OTP
+{% endblock %}
+
+{% block content %}
+    <h2>Your OTP is <strong> {{ otp }}</strong></h2>
+    <p>This OPT will expire in <strong} {{ expiry_time }} minutes.</strong</p>
+    <>If you didn't attempt to login, please contact our customer care team immediately.</p>
+    <p>Best Regards,</p>
+    <p><strong>The {{ site_name }} Team </strong></p>
+{% endblock content %}
