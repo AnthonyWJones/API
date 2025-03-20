@@ -48,7 +48,7 @@ class User(AbstractUser):
         _("Middle Name"), max_length=30, blank=True, null=True
     )
     last_name = models.CharField(_("Last Name"), max_length=30)
-    id_no = models.PositiveIntegerField(_("ID No"), unique=True)
+    id_no = models.PositiveIntegerField(_("ID No"), unique=True, db_index=True)
     account_status = models.CharField(
         _("Account Status"),
         max_length=10,
@@ -91,7 +91,7 @@ class User(AbstractUser):
 
     def handle_failed_login_attempts(self) -> None:
         self.failed_login_attempts += 1
-        self.last_failed_login = timezone.now()
+        self.last_failed_login_attempt = timezone.now()
         if self.failed_login_attempts >= settings.LOGIN_ATTEMPTS:
             self.account_status = self.AccountStatus.LOCKED
             self.save()
@@ -114,7 +114,7 @@ class User(AbstractUser):
     @property
     def is_locked_out(self) -> bool:
         if self.account_status == self.AccountStatus.LOCKED:
-            if (self.last_failed_login and (timezone.now() - self.last_failed_login) < settings.LOCKOUT_DURATION):
+            if (self.last_failed_login_attempt and (timezone.now() - self.last_failed_login) < settings.LOCKOUT_DURATION):
                 self.unlock_account()
                 return False
             return True
@@ -132,7 +132,7 @@ class User(AbstractUser):
         ordering = ["-date_joined"]
 
     def has_role(self, role: str) -> bool:
-        return hasattr(self, "role") and self.role == role_name
+        return hasattr(self, "role") and self.role == role
 
     def __str__(self):
         return f"{self.full_name} = {self.get_role_display()}"
