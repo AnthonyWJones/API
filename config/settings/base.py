@@ -127,6 +127,7 @@ STATIC_ROOT = str(BASE_DIR / "staticfiles")
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+AUTH_USER_MODEL = "user_apps.User"
 
 SITE_ID = 1
 

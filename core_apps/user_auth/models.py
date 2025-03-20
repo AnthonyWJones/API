@@ -18,10 +18,10 @@ class User(AbstractUser):
             "favorite_color",
             _("What is your favorite color?"),
         )
-        BIRTH_CITY = ("birth_city", _("What is your birth city?"))
+        BIRTH_CITY = ("birth_city", _("What is the name of the city you were born in?"))
         CHILDHOOD_FRIEND = (
             "childhood_friend",
-            _("What is the name of your best childhood friend?"),
+            _("What is the name of your childhood best friend?"),
         )
 
     class AccountStatus(models.TextChoices):
@@ -35,7 +35,7 @@ class User(AbstractUser):
         BRANCH_MANAGER = "branch_manager", _("Branch Manager")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.CharField(_("Username"), max_length=150, unique=True)
+    username = models.CharField(_("Username"), max_length=12, unique=True)
     security_question = models.CharField(
         _("Security Question"),
         max_length=30,
@@ -88,24 +88,62 @@ class User(AbstractUser):
             self.save()
             return True
         return False
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = [
-        "first_name",
-        "last_name",
-        "id_no",
-        "security_question",
-        "security_answer",
-    ]
 
-    def set_otp(self, otp: str) -> None:
-        self.otp = otp
-        self.otp_expiry_time = timezone.now() + settings.OTP_EXPIRATION
+    def handle_failed_login_attempts(self) -> None:
+        self.failed_login_attempts += 1
+        self.last_failed_login = timezone.now()
+        if self.failed_login_attempts >= settings.LOGIN_ATTEMPTS:
+            self.account_status = self.AccountStatus.LOCKED
+            self.save()
+            send_account_locked_email(self)
         self.save()
 
-    def verify_otp(self, otp: str) -> bool:
-        if self.otp == otp and self.otp_expiry_time and self.otp_expiry_time > timezone.now():
-            self.otp = ""
-            self.otp_expiry_time = None
+    def reset_failed_login_attempts(self) -> None:
+        self.failed_login_attempts = 0
+        self.last_failed_login = None
+        self.account_status = self.AccountStatus.ACTIVE
+        self.save()
+
+    def unlock_account(self) -> None:
+        if self.account_status == self.AccountStatus.LOCKED:
+            self.account_status = self.AccountStatus.ACTIVE
+            self.failed_login_attempts = 0
+            self.last_failed_login_attempt = None
             self.save()
+
+    @property
+    def is_locked_out(self) -> bool:
+        if self.account_status == self.AccountStatus.LOCKED:
+            if (self.last_failed_login and (timezone.now() - self.last_failed_login) < settings.LOCKOUT_DURATION):
+                self.unlock_account()
+                return False
             return True
         return False
+
+
+    @property
+    def full_name(self) -> str:
+        full_name = f"{self.first_name} {self.last_name}"
+        return full_name.title().strip()
+
+    class Meta:
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
+        ordering = ["-date_joined"]
+
+    def has_role(self, role: str) -> bool:
+        return hasattr(self, "role") and self.role == role_name
+
+    def __str__(self):
+        return f"{self.full_name} = {self.get_role_display()}"
+
+
+
+
+
+
+
+
+
+
+
