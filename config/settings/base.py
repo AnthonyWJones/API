@@ -3,6 +3,8 @@ from pathlib import Path
 from django.conf.global_settings import LOGGING_CONFIG
 from dotenv import load_dotenv
 from os import getenv, path
+
+from drf_spectacular.settings import SPECTACULAR_DEFAULTS
 from loguru import logger
 from datetime import timedelta
 
@@ -127,7 +129,21 @@ STATIC_ROOT = str(BASE_DIR / "staticfiles")
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_USER_MODEL = "user_apps.User"
+AUTH_USER_MODEL = "user_auth.User"
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "BackEndProgrammer.com",
+    "DESCRIPTION": "BackEndProgrammer.com",
+    "VERSION": "0.0.1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "LICENSE": {
+        "name": "MIT License",
+        "url": "https://opensource.org/licenses/MIT",
+    },
+}
 
 SITE_ID = 1
 
